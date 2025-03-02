@@ -1,70 +1,44 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = require("express");
-const Card_1 = require("../models/Card");
+// import { body, Result, ValidationError, validationResult } from 'express-validator' // ei toimi jostain syystä
 const validateToken_1 = require("../middleware/validateToken");
+const Card_1 = require("../models/Card");
 const router = (0, express_1.Router)();
-// Create a new Card
-router.post('/Card', validateToken_1.validateToken, async (req, res) => {
+// Add a new card
+router.post('/card', validateToken_1.validateToken, async (req, res) => {
     try {
-        const card = new Card_1.Card(req.body);
-        await card.save();
-        res.status(201).send(card);
+        const { columnId } = req.params;
+        const { title, description } = req.body;
+        const newCard = new Card_1.Card({ title, description, column: columnId });
+        await newCard.save();
+        res.status(201).json(newCard);
     }
     catch (error) {
-        res.status(400).send(error);
+        res.status(500).json({ error: 'Failed to add card' });
     }
 });
-// Get all Cards
-router.get('/Card', validateToken_1.validateToken, async (req, res) => {
+// Move a card to another column
+router.put('/card/:id/move', validateToken_1.validateToken, async (req, res) => {
     try {
-        const cards = await Card_1.Card.find();
-        res.status(200).send(cards);
+        const id = req.params.id;
+        const newColumnId = req.body;
+        const updatedCard = await Card_1.Card.findByIdAndUpdate(id, { column: newColumnId }, { new: true });
+        res.status(200).json(updatedCard);
     }
     catch (error) {
-        res.status(500).send(error);
+        res.status(500).json({ error: 'Failed to move card' });
     }
 });
-// Get a single Card
-router.get('/Card/:id', validateToken_1.validateToken, async (req, res) => {
+// Remove a card
+router.delete('/card/:id', validateToken_1.validateToken, async (req, res) => {
     try {
-        const card = await Card_1.Card.findById(req.params.id);
-        if (!card) {
-            res.status(404).send();
-            return;
-        }
-        res.status(200).send(card);
+        const { id } = req.params;
+        await Card_1.Card.findByIdAndDelete(id);
+        res.status(200).json({ message: 'Card removed' });
     }
     catch (error) {
-        res.status(500).send(error);
-    }
-});
-// Update a Card
-router.patch('/Card/:id', validateToken_1.validateToken, async (req, res) => {
-    try {
-        const card = await Card_1.Card.findByIdAndUpdate(req.params.id, req.body, { new: true, runValidators: true });
-        if (!card) {
-            res.status(404).send();
-            return;
-        }
-        res.status(200).send(card);
-    }
-    catch (error) {
-        res.status(400).send(error);
-    }
-});
-// Delete a Card
-router.delete('/Card/:id', validateToken_1.validateToken, async (req, res) => {
-    try {
-        const card = await Card_1.Card.findByIdAndDelete(req.params.id);
-        if (!card) {
-            res.status(404).send();
-            return;
-        }
-        res.status(200).send(card);
-    }
-    catch (error) {
-        res.status(500).send(error);
+        res.status(500).json({ error: 'Failed to remove card' });
     }
 });
 exports.default = router;

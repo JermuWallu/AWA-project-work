@@ -33,11 +33,13 @@ var __importStar = (this && this.__importStar) || (function () {
     };
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.Card = void 0;
+exports.Card = exports.CardSchema = void 0;
 const mongoose_1 = __importStar(require("mongoose"));
-const CardSchema = new mongoose_1.Schema({
+exports.CardSchema = new mongoose_1.Schema({
+    column: { type: String, required: true },
+    order: { type: String, required: true },
     title: { type: String, required: true },
     text: { type: String, required: true }
 });
-const Card = mongoose_1.default.model("Card", CardSchema);
+const Card = mongoose_1.default.model("Card", exports.CardSchema);
 exports.Card = Card;

@@ -1,27 +1,16 @@
-import mongoose, {Document, Schema } from 'mongoose'
-
-interface ICard extends Document {
-    title: string;
-    text: string;
-}
-
-const CardSchema = new Schema<ICard>({
-    title: { type: String, required: true },
-    text: { type: String, required: true }
-});
+import mongoose, {Document, ObjectId, Schema } from 'mongoose'
+import { ICard, CardSchema } from './Card'
 
 interface IColumn extends Document {
-    owner: number;
+    owner: String;
     name: String,
     order: Number, // Order of the column in the Column
-    cards: ICard[]
 }
 
 export const ColumnSchema = new Schema<IColumn>({
-    owner: { type: Number, required: true },
+    owner: { type: String, required: true },
     name: { type: String, required: true },
-    order: { type: Number, required: true },
-    cards: { type: [CardSchema], default: [] }
+    order: { type: Number, required: true }
 })
 
 const Column: mongoose.Model<IColumn> = mongoose.model<IColumn>("Column", ColumnSchema)
