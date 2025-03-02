@@ -20,7 +20,8 @@ i18n.use(initReactI18next)
         "logout": "Logout",
         "frontPage": "This is the front page",
         "loginPage": "Login",
-        "registerPage": "Register"
+        "registerPage": "Register",
+        "registrationSuccess": "Registration successful",
       }
     },
     fi: {
@@ -35,6 +36,7 @@ i18n.use(initReactI18next)
         "logout": "Kirjaudu ulos",
         "frontPage": "Tämä on etusivu",
         "loginPage": "Kirjaudu/Rekisteröidy sisään",
+        "registrationSuccess": "Rekisterointi onnistui!",
       } 
     },
   },

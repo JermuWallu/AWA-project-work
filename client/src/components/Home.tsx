@@ -1,6 +1,7 @@
 import { useTranslation } from 'react-i18next';
 import { Suspense, useEffect, useState } from "react";
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 
 interface Card {
     _id: string;
@@ -17,18 +18,19 @@ interface Column {
 export default function Home() {
     const { t } = useTranslation();
     const [columns, setColumns] = useState<Column[]>([]);
+    const navigate = useNavigate();
 
     useEffect(() => {
         const token = localStorage.getItem('token');
         if (!token) {
             alert('You are not logged in, redirecting to login page...');
-            window.location.href = '/login';
+            navigate('/login');
             return;
         }
 
         const fetchColumns = async () => {
             try {
-                const response = await axios.get('/api/columns', {
+                const response = await axios.get('http://localhost:1234/api/columns', {
                     headers: {
                         Authorization: `Bearer ${token}`
                     }
@@ -40,12 +42,38 @@ export default function Home() {
         };
 
         fetchColumns();
-    }, [history]);
+    }, [navigate]);
+
+    const addColumn = async () => {
+        const token = localStorage.getItem('token');
+        if (!token) {
+            alert('You are not logged in, redirecting to login page...');
+            navigate('/login');
+            return;
+        }
+
+        const newColumn = {
+            name: 'New Column',
+            order: columns.length + 1
+        };
+
+        try {
+            const response = await axios.post('http://localhost:1234/api/columns', newColumn, {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            });
+            setColumns([...columns, response.data]);
+        } catch (error) {
+            console.error('Failed to add column', error);
+        }
+    };
 
     return (
         <Suspense fallback="loading">
             <div>
                 <h1>{t('frontPage')}</h1>
+                <button onClick={addColumn}>Add Column</button>
                 {columns.map(column => (
                     <div key={column._id}>
                         <h2>{column.name}</h2>

@@ -1,5 +1,6 @@
 import { useTranslation } from 'react-i18next';
 import { Suspense } from "react";
+import axios from 'axios';
 
 export default function Login() {
     const { t } = useTranslation();
@@ -14,22 +15,21 @@ export default function Login() {
         }
 
         try {
-            const response = await fetch('http://localhost:1234/user/login', {
-                method: 'POST',
+            const response = await axios.post('http://localhost:1234/user/login', { email, password }, {
                 headers: {
                     'Content-Type': 'application/json',
-                    'Access-Control-Allow-Origin': '*'
-                },
-                body: JSON.stringify({ email, password }),
+                    'Access-Control-Allow-Origin': 'http://localhost:1234'
+                }
             });
 
-            if (response.ok) {
-                const data = await response.json();
+            if (response.status === 200) {
+                const data = response.data;
                 localStorage.setItem('token', data.token);
                 window.location.href = '/home';
+            } else if (response.status === 401) {
+                alert('Login failed');
             } else {
-                const errorData = await response.json();
-                alert(errorData.message);
+                alert(response.data.message);
             }
         } catch (error) {
             console.error('Error during login:', error);
@@ -46,20 +46,17 @@ export default function Login() {
         }
 
         try {
-            const response = await fetch('http://localhost:1234/user/register', {
-                method: 'POST',
+            const response = await axios.post('http://localhost:1234/user/register', { email, password }, {
                 headers: {
                     'Content-Type': 'application/json',
                     'Access-Control-Allow-Origin': '*'
-                },
-                body: JSON.stringify({ email, password }),
+                }
             });
 
-            if (response.ok) {
+            if (response.status === 200) {
                 alert(t('registrationSuccess'));
             } else {
-                const errorData = await response.json();
-                alert(errorData.message);
+                alert(response.data.message);
             }
         } catch (error) {
             console.error('Error during registration:', error);
