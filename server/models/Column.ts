@@ -1,13 +1,11 @@
 import mongoose, {Document, Schema } from 'mongoose'
 
 interface ICard extends Document {
-    column: number;
     title: string;
     text: string;
 }
 
 const CardSchema = new Schema<ICard>({
-    column: { type: Number, required: true },
     title: { type: String, required: true },
     text: { type: String, required: true }
 });

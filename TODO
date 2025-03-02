@@ -1,0 +1,18 @@
+columns:
+    - Add/
+    - remove/
+    - rename
+
+Cards:
+    - Add
+    - move
+    - remove
+
+Authentication:
+    - login
+    - register
+    - logout
+
+
+Other: 
+    - Responsive design

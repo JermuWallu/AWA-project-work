@@ -7,7 +7,7 @@ const express_1 = __importDefault(require("express"));
 const dotenv_1 = __importDefault(require("dotenv"));
 const morgan_1 = __importDefault(require("morgan"));
 const mongoose_1 = __importDefault(require("mongoose"));
-const card_1 = __importDefault(require("./routes/card"));
+const column_1 = __importDefault(require("./routes/column"));
 const user_1 = __importDefault(require("./routes/user"));
 dotenv_1.default.config();
 // Basic express server stuff
@@ -24,7 +24,7 @@ app.use(express_1.default.json());
 app.use(express_1.default.urlencoded({ extended: false }));
 app.use((0, morgan_1.default)("dev"));
 // Routes
-app.use('/api', card_1.default);
+app.use('/api', column_1.default);
 app.use('/user', user_1.default);
 // Port listening methods
 app.listen(port, () => {

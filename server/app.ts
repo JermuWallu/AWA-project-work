@@ -2,7 +2,7 @@ import express, {Express} from "express"
 import dotenv from 'dotenv';
 import morgan from 'morgan';
 import mongoose, {Connection } from 'mongoose'
-import cardRouter from './routes/card';
+import columnRouter from './routes/column';
 import userRouter from './routes/user';
 
 dotenv.config()
@@ -24,7 +24,7 @@ app.use(express.urlencoded({extended: false}))
 app.use(morgan("dev"))
 
 // Routes
-app.use('/api', cardRouter);
+app.use('/api', columnRouter);
 app.use('/user', userRouter);
 
 

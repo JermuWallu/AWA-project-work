@@ -1,38 +1,56 @@
-// import React from 'react';
+import React from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import AppBar from '@mui/material/AppBar';
+import Toolbar from '@mui/material/Toolbar';
+import Typography from '@mui/material/Typography';
+import Button from '@mui/material/Button';
+import { makeStyles } from '@mui/styles';
+
+const useStyles = makeStyles({
+  title: {
+    flexGrow: 1,
+  },
+  link: {
+    textDecoration: 'none',
+    color: 'inherit',
+  },
+});
 
 export default function Header() {
   const { i18n, t } = useTranslation();
+  const classes = useStyles();
 
   const changeLanguage = (lng: string) => {
     i18n.changeLanguage(lng);
   };
 
   return (
-    <header className="bg-gray-800 text-white p-4 flex justify-between items-center">
-      <div className="space-x-4">
-        <button onClick={() => changeLanguage('en')} className="hover:underline">
-          en
-        </button>
-        <button onClick={() => changeLanguage('fi')} className="hover:underline">
-          fi
-        </button>
-      </div>
-      <div className="text-xl font-bold">
-        {t('header')}
-      </div>
-      <nav className="space-x-4">
-        <RouterLink to="/" className="hover:underline">
-        {t('home')}
-        </RouterLink>
-        <RouterLink to="/board" className="hover:underline">
-        {t('board')}
-        </RouterLink>
-        <RouterLink to="/logout" className="hover:underline">
-        {t('logout')}
-        </RouterLink>
-      </nav>
-    </header>
+    <AppBar position="static">
+      <Toolbar>
+        <div>
+          <Button color="inherit" onClick={() => changeLanguage('en')}>
+            en
+          </Button>
+          <Button color="inherit" onClick={() => changeLanguage('fi')}>
+            fi
+          </Button>
+        </div>
+        <Typography variant="h6" className={classes.title}>
+          {t('header')}
+        </Typography>
+        <nav>
+          <RouterLink to="/" className={classes.link}>
+            <Button color="inherit">{t('home')}</Button>
+          </RouterLink>
+          <RouterLink to="/board" className={classes.link}>
+            <Button color="inherit">{t('board')}</Button>
+          </RouterLink>
+          <RouterLink to="/login" className={classes.link}>
+            <Button color="inherit">{t('login')}</Button>
+          </RouterLink>
+        </nav>
+      </Toolbar>
+    </AppBar>
   );
 }
