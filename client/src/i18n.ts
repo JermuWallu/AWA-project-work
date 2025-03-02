@@ -29,10 +29,12 @@ i18n.use(initReactI18next)
         "home": "Etusivu",
         "board": "Taulu",
         "login": "Kirjaudu",
+        "register": "Rekisteröidy",
+        "email": "Sähköposti",
+        "password": "Salasana",
         "logout": "Kirjaudu ulos",
         "frontPage": "Tämä on etusivu",
-        "loginPage": "Kirjaudu",
-        "registerPage": "Rekisteröidy"
+        "loginPage": "Kirjaudu/Rekisteröidy sisään",
       } 
     },
   },
