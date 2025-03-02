@@ -7,11 +7,15 @@ const express_1 = require("express");
 // import { body, Result, ValidationError, validationResult } from 'express-validator' // ei toimi jostain syystä
 const bcrypt_1 = __importDefault(require("bcrypt"));
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
-const validateToken_1 = require("../middleware/validateToken");
 const User_1 = require("../models/User");
 const router = (0, express_1.Router)();
 router.post("/register", async (req, res) => {
     try {
+        // express-validator doesen't work so cant do better validation
+        if (!req.body.email || !req.body.password) {
+            res.status(400).json({ message: "Bad request" });
+            return;
+        }
         const existingUser = await User_1.User.findOne({ email: req.body.email });
         if (existingUser) {
             res.status(403).json({ email: "email already in use" });
@@ -29,12 +33,13 @@ router.post("/register", async (req, res) => {
         return;
     }
 });
+// dont ever do this in real world
 router.get("/list", async (req, res) => {
     res.status(200).json(User_1.User);
 });
 router.post("/login", async (req, res) => {
     try {
-        const user = await User_1.User.findOne(req.body.email);
+        const user = await User_1.User.findOne({ email: req.body.email });
         console.log("User:", user);
         if (!user) {
             res.status(401).json({ message: "Login failed" });
@@ -56,8 +61,5 @@ router.post("/login", async (req, res) => {
         res.status(500).json({ error: 'Internal Server Error' });
         return;
     }
-});
-router.get("/private", validateToken_1.validateToken, async (req, res) => {
-    res.status(200).json({ message: "This is protected secure route!" });
 });
 exports.default = router;

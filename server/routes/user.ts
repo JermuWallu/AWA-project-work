@@ -10,6 +10,11 @@ const router: Router = Router()
 router.post("/register", 
     async (req: Request, res: Response) => {
         try {
+            // express-validator doesen't work so cant do better validation
+            if (!req.body.email || !req.body.password) {
+                res.status(400).json({message: "Bad request"})
+                return
+            }
             const existingUser: IUser | null = await User.findOne({ email: req.body.email })
             if (existingUser) {
                 res.status(403).json({email: "email already in use"})
@@ -33,6 +38,7 @@ router.post("/register",
     }
 )
 
+// dont ever do this in real world
 router.get("/list", 
     async (req: Request, res: Response) =>{
         res.status(200).json(User)
@@ -42,7 +48,7 @@ router.get("/list",
 router.post("/login",
     async (req: Request, res: Response) => {
         try {
-            const user: IUser | null = await User.findOne(req.body.email)
+            const user: IUser | null = await User.findOne({ email: req.body.email })
 
             console.log("User:", user)
 
@@ -69,13 +75,6 @@ router.post("/login",
             res.status(500).json({ error: 'Internal Server Error' })
             return
         }
-    }
-)
-
-router.get("/private", 
-    validateToken, 
-    async (req: Request, res: Response) => {
-        res.status(200).json({message: "This is protected secure route!"})
     }
 )
 

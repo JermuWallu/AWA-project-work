@@ -33,15 +33,18 @@ var __importStar = (this && this.__importStar) || (function () {
     };
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.Board = exports.BoardSchema = exports.ColumnSchema = void 0;
+exports.Column = exports.ColumnSchema = void 0;
 const mongoose_1 = __importStar(require("mongoose"));
+const CardSchema = new mongoose_1.Schema({
+    column: { type: Number, required: true },
+    title: { type: String, required: true },
+    text: { type: String, required: true }
+});
 exports.ColumnSchema = new mongoose_1.Schema({
+    owner: { type: Number, required: true },
     name: { type: String, required: true },
-    order: { type: Number, required: true }
+    order: { type: Number, required: true },
+    cards: { type: [CardSchema], default: [] }
 });
-exports.BoardSchema = new mongoose_1.Schema({
-    user: { type: String, required: true },
-    columns: { type: [exports.ColumnSchema], required: true }
-});
-const Board = mongoose_1.default.model("Board", exports.BoardSchema);
-exports.Board = Board;
+const Column = mongoose_1.default.model("Column", exports.ColumnSchema);
+exports.Column = Column;
