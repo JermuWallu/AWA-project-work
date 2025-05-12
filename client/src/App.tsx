@@ -12,7 +12,7 @@ function App() {
       <Routes>
         <Route path="/" element={<Home/>}></Route>
         <Route path='/home' element={<Home/>}></Route>
-        <Route path='/login' element={<Login/>}></Route>       
+        <Route path='/login' element={<Login/>}></Route>
       </Routes>
     </BrowserRouter>
   )
