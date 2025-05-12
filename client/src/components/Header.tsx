@@ -1,12 +1,27 @@
-import React from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { useEffect, useState } from 'react';
 
 export default function Header() {
   const { i18n, t } = useTranslation();
+  const [hasToken, setHasToken] = useState(false);
+
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    if (token) {
+        setHasToken(true);
+    } else {
+        setHasToken(false);
+    }
+  }, []);
 
   const changeLanguage = (lng: string) => {
     i18n.changeLanguage(lng);
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem('token');
+    setHasToken(false);
   };
 
   return (
@@ -34,9 +49,18 @@ export default function Header() {
           <RouterLink to="/board" className="text-white hover:text-gray-300">
             {t('board')}
           </RouterLink>
-          <RouterLink to="/login" className="text-white hover:text-gray-300">
-            {t('login')}
-          </RouterLink>
+          {hasToken ? (
+            <button
+              onClick={handleLogout}
+              className="text-white hover:text-gray-300"
+            >
+              {t('logout')}
+            </button>
+          ) : (
+            <RouterLink to="/login" className="text-white hover:text-gray-300">
+              {t('login')}
+            </RouterLink>
+          )}
         </nav>
       </div>
     </header>

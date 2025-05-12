@@ -22,6 +22,7 @@ i18n.use(initReactI18next)
         "loginPage": "Login",
         "registerPage": "Register",
         "registrationSuccess": "Registration successful",
+        "kanban board": "Kanban board",
       }
     },
     fi: {
@@ -37,7 +38,8 @@ i18n.use(initReactI18next)
         "frontPage": "Tämä on etusivu",
         "loginPage": "Kirjaudu/Rekisteröidy sisään",
         "registrationSuccess": "Rekisterointi onnistui!",
-      } 
+        "kanban board": "Kanban board",
+      }
     },
   },
 

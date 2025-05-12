@@ -9,10 +9,11 @@ Cards:
     - remove
 
 Authentication:
-    - login
-    - register
+    - login @done
+    - register @done
     - logout
 
 
-Other: 
+Other:
     - Responsive design
+    - Tranlation
