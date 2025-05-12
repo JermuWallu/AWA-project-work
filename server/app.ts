@@ -2,7 +2,7 @@ import express, { Express } from 'express';
 import dotenv from 'dotenv';
 import morgan from 'morgan';
 import mongoose, { Connection } from 'mongoose';
-import cors from 'cors'; // Import the cors package
+import cors, { CorsOptions } from 'cors'; // Import the cors package
 import columnRouter from './routes/column';
 import cardRouter from './routes/card';
 import userRouter from './routes/user';
@@ -26,11 +26,13 @@ app.use(express.urlencoded({ extended: false }));
 app.use(morgan('dev'));
 
 // Configure CORS
-app.use(cors({
-  origin: 'http://localhost:3000', // Allow requests from your client
-  methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
-  credentials: true, // Allow cookies to be sent with requests
-}));
+if (process.env.NODE_ENV === 'development') {
+  const corsOptions: CorsOptions = {
+    origin: 'http://localhost:3000',
+    optionsSuccessStatus: 200,
+  }
+  app.use(cors(corsOptions));
+}
 
 // Routes
 app.use('/api', columnRouter);

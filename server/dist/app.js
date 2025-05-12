@@ -26,11 +26,13 @@ app.use(express_1.default.json());
 app.use(express_1.default.urlencoded({ extended: false }));
 app.use((0, morgan_1.default)('dev'));
 // Configure CORS
-app.use((0, cors_1.default)({
-    origin: 'http://localhost:3000', // Allow requests from your client
-    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
-    credentials: true, // Allow cookies to be sent with requests
-}));
+if (process.env.NODE_ENV === 'development') {
+    const corsOptions = {
+        origin: 'http://localhost:3000',
+        optionsSuccessStatus: 200,
+    };
+    app.use((0, cors_1.default)(corsOptions));
+}
 // Routes
 app.use('/api', column_1.default);
 app.use('/api', card_1.default);
