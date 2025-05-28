@@ -49,7 +49,7 @@ router.post("/login", async (req, res) => {
             const jwtPayload = {
                 email: user.email
             };
-            const token = jsonwebtoken_1.default.sign(jwtPayload, process.env.SECRET, { expiresIn: "2m" });
+            const token = jsonwebtoken_1.default.sign(jwtPayload, process.env.SECRET, { expiresIn: "1h" });
             res.status(200).json({ success: true, token });
             return;
         }

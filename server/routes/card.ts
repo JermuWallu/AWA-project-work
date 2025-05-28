@@ -1,12 +1,12 @@
 import { Request, Response, Router } from 'express'
 // import { body, Result, ValidationError, validationResult } from 'express-validator' // ei toimi jostain syystä
-import { validateToken } from '../middleware/validateToken'
+import { validateToken, CustomRequest } from '../middleware/validateToken'
 import { Card, ICard } from '../models/Card';
 
 const router: Router = Router()
 
 // Add a new card
-router.post('/card', validateToken, async (req: Request, res: Response) => {
+router.post('/card', validateToken, async (req: CustomRequest, res: Response) => {
     try {
         const { columnId } = req.params;
         const { title, description } = req.body;
@@ -19,7 +19,7 @@ router.post('/card', validateToken, async (req: Request, res: Response) => {
 });
 
 // Move a card to another column
-router.put('/card/:id/move', validateToken, async (req: Request, res: Response) => {
+router.put('/card/:id/move', validateToken, async (req: CustomRequest, res: Response) => {
     try {
         const id: string = req.params.id;
         const newColumnId = req.body;
@@ -31,7 +31,7 @@ router.put('/card/:id/move', validateToken, async (req: Request, res: Response) 
 });
 
 // Remove a card
-router.delete('/card/:id', validateToken, async (req: Request, res: Response) => {
+router.delete('/card/:id', validateToken, async (req: CustomRequest, res: Response) => {
     try {
         const { id } = req.params;
         await Card.findByIdAndDelete(id);

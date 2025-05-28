@@ -10,6 +10,7 @@ dotenv_1.default.config();
 const validateToken = (req, res, next) => {
     const token = req.header('authorization')?.split(" ")[1];
     if (!token) {
+        console.log("No token provided");
         res.status(401).json({ message: "Access denied, missing token" });
         return;
     }
@@ -19,7 +20,8 @@ const validateToken = (req, res, next) => {
         next();
     }
     catch (error) {
-        res.status(401).json({ message: "Access denied, missing token" });
+        console.log("Invalid token provided");
+        res.status(401).json({ message: "Access denied, invalid token" });
     }
 };
 exports.validateToken = validateToken;

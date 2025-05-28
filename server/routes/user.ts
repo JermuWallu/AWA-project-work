@@ -7,7 +7,7 @@ import {User, IUser} from '../models/User';
 
 const router: Router = Router()
 
-router.post("/register", 
+router.post("/register",
     async (req: Request, res: Response) => {
         try {
             // express-validator doesen't work so cant do better validation
@@ -39,7 +39,7 @@ router.post("/register",
 )
 
 // dont ever do this in real world
-router.get("/list", 
+router.get("/list",
     async (req: Request, res: Response) =>{
         res.status(200).json(User)
     }
@@ -61,7 +61,7 @@ router.post("/login",
                 const jwtPayload: JwtPayload = {
                     email: user.email
                 }
-                const token: string = jwt.sign(jwtPayload, process.env.SECRET as string, { expiresIn: "2m"})
+                const token: string = jwt.sign(jwtPayload, process.env.SECRET as string, { expiresIn: "1h"})
 
                 res.status(200).json({success: true, token})
                 return

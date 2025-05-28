@@ -4,14 +4,16 @@ import dotenv from "dotenv"
 
 dotenv.config()
 
-interface CustomRequest extends Request {
+export interface CustomRequest extends Request {
     user?: JwtPayload
+    email?: string
 }
 
 export const validateToken = (req: CustomRequest, res: Response, next: NextFunction) => {
     const token: string | undefined = req.header('authorization')?.split(" ")[1]
 
     if(!token) {
+        console.log("No token provided")
         res.status(401).json({message: "Access denied, missing token"})
         return
     }
@@ -21,6 +23,7 @@ export const validateToken = (req: CustomRequest, res: Response, next: NextFunct
         next()
 
     } catch (error: any) {
-        res.status(401).json({message: "Access denied, missing token"})
+        console.log("Invalid token provided")
+        res.status(401).json({message: "Access denied, invalid token"})
     }
 }

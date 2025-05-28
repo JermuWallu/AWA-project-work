@@ -8,7 +8,9 @@ const router = (0, express_1.Router)();
 // Get all columns
 router.get('/columns', validateToken_1.validateToken, async (req, res) => {
     try {
-        const columns = await Column_1.Column.find();
+        const userId = req.user?.email;
+        console.log("User ID:", userId);
+        const columns = await Column_1.Column.find({ owner: userId }).sort({ order: 1 });
         res.status(200).json(columns);
     }
     catch (error) {
@@ -16,10 +18,13 @@ router.get('/columns', validateToken_1.validateToken, async (req, res) => {
     }
 });
 // Add a new column
-router.post('/columns', validateToken_1.validateToken, async (req, res) => {
+router.post('/column', validateToken_1.validateToken, async (req, res) => {
     try {
-        const { name } = req.body;
-        const newColumn = new Column_1.Column({ name });
+        const newColumn = new Column_1.Column({
+            owner: req.user?.email,
+            name: "New Column",
+            order: 0
+        });
         await newColumn.save();
         res.status(201).json(newColumn);
     }
@@ -28,7 +33,7 @@ router.post('/columns', validateToken_1.validateToken, async (req, res) => {
     }
 });
 // Remove a column
-router.delete('/columns/:id', validateToken_1.validateToken, async (req, res) => {
+router.delete('/column/:id', validateToken_1.validateToken, async (req, res) => {
     try {
         // TODO: remove all cards in the column
         const { id } = req.params;
@@ -40,7 +45,7 @@ router.delete('/columns/:id', validateToken_1.validateToken, async (req, res) =>
     }
 });
 // Rename a column
-router.put('/columns/:id', validateToken_1.validateToken, async (req, res) => {
+router.put('/column/:id', validateToken_1.validateToken, async (req, res) => {
     try {
         const { id } = req.params;
         const { name } = req.body;
