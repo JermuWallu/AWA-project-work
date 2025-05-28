@@ -26,14 +26,20 @@ export default function Login() {
                 const data = response.data;
                 localStorage.setItem('token', data.token);
                 window.location.href = '/home';
-            } else if (response.status === 401) {
-                alert('Login failed');
-            } else {
-                alert(response.data.message);
+            }  else {
+                console.error('Error during login:', response);
+                alert('Internal error');
             }
         } catch (error) {
+            if (axios.isAxiosError(error) && error.response) {
+                console.log('Failed login:', error.response);
+                if (error.status === 401) {
+                    alert('Login failed');
+                }
+            } else {
             console.error('Error during login:', error);
             alert('Internal error');
+            }
         }
     }
 
@@ -66,23 +72,47 @@ export default function Login() {
 
     return (
         <Suspense fallback="loading">
-            <div>
-                <h1>{t('loginPage')}</h1>
-                <form>
-                    <div>
-                        <label htmlFor="email">{t('email')}</label>
-                        <input type="email" id="email" name="email" required />
+            <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100">
+                <h1 className="text-4xl font-bold mb-8 text-center">{t('loginPage')}</h1>
+                <form className="bg-white p-6 rounded shadow-md w-full max-w-sm">
+                    <div className="mb-4">
+                        <label htmlFor="email" className="block text-gray-700 font-medium mb-2">{t('email')}</label>
+                        <input
+                            type="email"
+                            id="email" 
+                            name="email" 
+                            required 
+                            className="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        />
                     </div>
-                    <div>
-                        <label htmlFor="password">{t('password')}</label>
-                        <input type="password" id="password" name="password" required />
+                    <div className="mb-4">
+                        <label htmlFor="password" className="block text-gray-700 font-medium mb-2">{t('password')}</label>
+                        <input 
+                            type="password" 
+                            id="password" 
+                            name="password" 
+                            required 
+                            className="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        />
                     </div>
-                    <div>
-                        <button type="button" onClick={handleLogin}>{t('login')}</button>
-                        <button type="button" onClick={handleRegister}>{t('register')}</button>
+                    <div className="flex justify-between">
+                        <button 
+                            type="button" 
+                            onClick={handleLogin} 
+                            className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+                        >
+                            {t('login')}
+                        </button>
+                        <button 
+                            type="button" 
+                            onClick={handleRegister} 
+                            className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600"
+                        >
+                            {t('register')}
+                        </button>
                     </div>
                 </form>
             </div>
         </Suspense>
-    )
+    );
 }
