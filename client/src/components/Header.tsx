@@ -32,13 +32,13 @@ export default function Header() {
             className="text-white hover:text-gray-300"
             onClick={() => changeLanguage('en')}
           >
-            en
+            EN
           </button>
           <button
             className="text-white hover:text-gray-300"
             onClick={() => changeLanguage('fi')}
           >
-            fi
+            FI
           </button>
         </div>
         <h1 className="text-xl font-bold">{t('header')}</h1>

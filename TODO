@@ -17,3 +17,6 @@ Authentication:
 Other:
     - Responsive design
     - Tranlation
+
+Bugs:
+    -logout doesn't happen when token is expired
