@@ -2,6 +2,8 @@ import { useTranslation } from 'react-i18next';
 import { Suspense, useEffect, useState } from "react";
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import Card from './Cards';
+import Column from './Column';
 
 interface Card {
     _id: string;
@@ -21,42 +23,16 @@ export default function Board() {
     const navigate = useNavigate();
     const [loggedIn, setLoggedIn] = useState(false);
 
-    useEffect(() => {
-        const token = localStorage.getItem('token');
-        if (!token) {
-            setLoggedIn(false);
-            navigate('/login');
-            alert('You are not logged in, redirecting to login page...');
-
-        } else {
-            setLoggedIn(true);
-            const fetchColumns = async () => {
-            try {
-                const response = await axios.get('http://localhost:1234/api/columns', {
-                    headers: {
-                        Authorization: `Bearer ${token}`
-                    }
-                });
-                setColumns(response.data);
-            } catch (error) {
-                console.error('Failed to fetch columns', error);
-            }
-        };
-        fetchColumns();
-        }
-
-    }, [navigate]);
-
+    // Function to add a new column
     const addColumn = async () => {
-        const token = localStorage.getItem('token');
-        if (!loggedIn) {
+        const token = localStorage.getItem('token') || "";
+        if (!loggedIn || !token) {
             alert('You are not logged in, redirecting to login page...');
             navigate('/login');
         }
 
         const newColumn = {
-            name: 'New Column',
-            order: columns.length + 1
+            name: 'Brand New Column'
         };
 
         try {
@@ -65,55 +41,77 @@ export default function Board() {
                     Authorization: `Bearer ${token}`
                 }
             });
+            if (response.status !== 201) {
+                console.error('Failed to add column:', response);
+                alert('Failed to add column');
+                return;
+            }
             setColumns([...columns, response.data]);
+            // fetchColumns(token); // Refresh columns after adding a new one
         } catch (error) {
             console.error('Failed to add column', error);
         }
     };
 
+        // Check if user is logged in and fetch columns on component mount
+    useEffect(() => {
+        const token = localStorage.getItem('token');
+        if (!token) {
+            setLoggedIn(false);
+            navigate('/login'); // TODO: user react navigation
+            alert('You are not logged in, redirecting to login page...');
+
+        } else {
+            setLoggedIn(true);
+                // Function to fetch columns from the API
+            const fetchColumns = async (token: string) => {
+                try {
+                    const response = await axios.get('http://localhost:1234/api/columns', {
+                        headers: {
+                            Authorization: `Bearer ${token}`
+                        }
+                    });
+                    setColumns(response.data);
+                } catch (error) {
+                    if (axios.isAxiosError(error) && error.response) {
+                        if (error.status == 403) {
+                        alert('You do not have permission to access this resource.');
+                        return;
+                        }
+                        else if (error.status == 401) {
+                            setLoggedIn(false);
+                            navigate('/login'); // TODO: user react navigation
+                            alert('You are not logged in, redirecting to login page...');
+                            return;
+                        } else {
+                            console.error('Failed to fetch columns:', error.response);
+                        }
+                    } else {
+                        console.error('Failed to fetch columns:', error);
+                    }
+                }
+            };
+            fetchColumns(token);
+        }
+
+    }, [setColumns, navigate]);
     return (
         <Suspense fallback="loading">
-            <div className="p-6 bg-gray-100 min-h-screen">
-                <h1 className="text-3xl font-bold mb-6">{t('kanban board')}</h1>
+            <div className="p-6 bg-gray-100">
+                <h1 className="text-3xl font-bold mb-6">
+                    {t('kanban board')}
+                </h1>
                 <button
                     onClick={addColumn}
                     className="mb-6 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
                 >
                     Add Column
                 </button>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    {columns.map(column => (
-                        <div key={column._id} className="bg-white shadow-md rounded-lg p-4">
-                            <div className="flex justify-between items-center mb-4">
-                                <h2 className="text-xl font-semibold">{column.name}</h2>
-                                <h1 className="relative group">
-                                    <span className="text-gray-500 hover:text-gray-700">⋮</span>
-                                    <button className="absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded shadow-md hidden group-click:block">
-                                        <ul className="py-1">
-                                            <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer">Option 1</li>
-                                            <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer">Option 2</li>
-                                            <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer">Option 3</li>
-                                        </ul>
-                                    </button>
-                                </h1>
-                            </div>
-                            <div className="space-y-4 mb-4">
-                                {column.cards.map(card => (
-                                    <div key={card._id} className="border border-gray-300 rounded p-4">
-                                        <h3 className="text-lg font-medium mb-2">{card.title}</h3>
-                                        <hr className="mb-2" />
-                                        <p>{card.description}</p>
-                                    </div>
-                                ))}
-                            </div>
-                            <button
-                                className="w-full px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600"
-                            >
-                                Add Card
-                            </button>
-                        </div>
-                    ))}
-                </div>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                {columns.map(column => (
+                    <Column key={column._id} {...column} />
+                ))}
             </div>
         </Suspense>
     );

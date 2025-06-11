@@ -23,6 +23,7 @@ i18n.use(initReactI18next)
         "registerPage": "Register",
         "registrationSuccess": "Registration successful",
         "kanban board": "Kanban board",
+        "Add Card": "Add Card",
       }
     },
     fi: {
@@ -39,6 +40,7 @@ i18n.use(initReactI18next)
         "loginPage": "Kirjaudu/Rekisteröidy sisään",
         "registrationSuccess": "Rekisterointi onnistui!",
         "kanban board": "Kanban board",
+        "Add Card": "Lisää kortti",
       }
     },
   },

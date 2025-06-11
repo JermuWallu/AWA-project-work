@@ -79,33 +79,33 @@ export default function Login() {
                         <label htmlFor="email" className="block text-gray-700 font-medium mb-2">{t('email')}</label>
                         <input
                             type="email"
-                            id="email" 
-                            name="email" 
-                            required 
+                            id="email"
+                            name="email"
+                            required
                             className="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
                         />
                     </div>
                     <div className="mb-4">
                         <label htmlFor="password" className="block text-gray-700 font-medium mb-2">{t('password')}</label>
-                        <input 
-                            type="password" 
-                            id="password" 
-                            name="password" 
-                            required 
+                        <input
+                            type="password"
+                            id="password"
+                            name="password"
+                            required
                             className="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
                         />
                     </div>
                     <div className="flex justify-between">
-                        <button 
-                            type="button" 
-                            onClick={handleLogin} 
+                        <button
+                            type="button"
+                            onClick={handleLogin}
                             className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
                         >
                             {t('login')}
                         </button>
-                        <button 
-                            type="button" 
-                            onClick={handleRegister} 
+                        <button
+                            type="button"
+                            onClick={handleRegister}
                             className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600"
                         >
                             {t('register')}
