@@ -35,12 +35,10 @@ var __importStar = (this && this.__importStar) || (function () {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Column = exports.ColumnSchema = void 0;
 const mongoose_1 = __importStar(require("mongoose"));
-const Card_1 = require("./Card");
 exports.ColumnSchema = new mongoose_1.Schema({
     owner: { type: String, required: true },
     name: { type: String, required: true },
     order: { type: Number, required: true },
-    cards: { type: [Card_1.CardSchema], default: [] }
 });
 const Column = mongoose_1.default.model("Column", exports.ColumnSchema);
 exports.Column = Column;

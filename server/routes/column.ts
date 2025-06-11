@@ -64,6 +64,7 @@ router.put('/column/:id', validateToken, async (req: CustomRequest, res: Respons
 });
 
 // Reorder columns
+// Holy fuck this is spaghetti
 router.put('/columns/:id', validateToken, async (req: CustomRequest, res: Response) => {
     try {
         var { id } = req.params;

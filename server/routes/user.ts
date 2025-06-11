@@ -63,7 +63,7 @@ router.post("/login",
                 }
                 const token: string = jwt.sign(jwtPayload, process.env.SECRET as string, { expiresIn: "1h"})
 
-                res.status(200).json({success: true, token})
+                res.status(200).json({success: true, token, expiresIn: "1h"})
                 return
             }
             res.status(401).json({message: "Login failed"})

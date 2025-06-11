@@ -50,7 +50,7 @@ router.post("/login", async (req, res) => {
                 email: user.email
             };
             const token = jsonwebtoken_1.default.sign(jwtPayload, process.env.SECRET, { expiresIn: "1h" });
-            res.status(200).json({ success: true, token });
+            res.status(200).json({ success: true, token, expiresIn: "1h" });
             return;
         }
         res.status(401).json({ message: "Login failed" });
