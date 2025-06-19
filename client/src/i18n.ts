@@ -23,7 +23,11 @@ i18n.use(initReactI18next)
         "registerPage": "Register",
         "registrationSuccess": "Registration successful",
         "kanban board": "Kanban board",
+        "Add Column": "Add Column",
         "Add Card": "Add Card",
+        "Rename column": "Rename column",
+        "Move column": "Move column",
+        "Remove column": "Remove column",
       }
     },
     fi: {
@@ -40,7 +44,11 @@ i18n.use(initReactI18next)
         "loginPage": "Kirjaudu/Rekisteröidy sisään",
         "registrationSuccess": "Rekisterointi onnistui!",
         "kanban board": "Kanban board",
+        "Add Column": "Lisää sarake",
         "Add Card": "Lisää kortti",
+        "Rename column": "Nimeä sarake ",
+        "Move column": "Siirrä sarake",
+        "Remove column": "Poista sarake",
       }
     },
   },
