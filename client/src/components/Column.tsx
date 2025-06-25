@@ -166,7 +166,7 @@ export default function Column(props: ColumnProps) {
                 </h1>
             </div>
             <div id="cards-div" className="space-y-4 mb-4">
-              <Cards _id={props._id}/>
+                <Cards _id={props._id}/>
             </div>
             <Button
             variant="contained"

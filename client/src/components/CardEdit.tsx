@@ -54,42 +54,57 @@ export default function CardEdit({ cardId, initialTitle, initialText, initialCol
 
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-black/50 z-50">
-      <Grid container direction="column" className="bg-white rounded-lg shadow-lg p-6 w-96" style={{ gridRowGap: 16 }}>
-        <Typography variant="h6" className="mb-2">Edit the card</Typography>
-        <TextField
-          label="Title"
-          value={title}
-          onChange={e => setTitle(e.target.value)}
-          fullWidth
-          className="mb-2"
-        />
-        <TextField
-          label="Text"
-          value={text}
-          onChange={e => setText(e.target.value)}
-          fullWidth
-          multiline
-          minRows={2}
-          className="mb-2"
-        />
-        <div className="flex items-center mb-2">
-          <span className="mr-2">Color:</span>
-          <Button
-            variant="contained"
-            style={{ backgroundColor: color, minWidth: 36, minHeight: 36 }}
-            onClick={handleColorClick}
-          />
-          <Menu anchorEl={anchorEl} open={open} onClose={handleColorClose}>
-            {colorOptions.map((c) => (
-              <MenuItem key={c} onClick={() => handleColorSelect(c)}>
-                <span style={{ backgroundColor: c, width: 24, height: 24, display: 'inline-block', borderRadius: 4, border: c === color ? '2px solid #000' : '1px solid #ccc' }} />
-              </MenuItem>
-            ))}
-          </Menu>
-        </div>
-        <Button variant="contained" color="primary" onClick={handleSave} className="mb-2">Save changes</Button>
-        <Button variant="text" color="secondary" onClick={onClose}>Cancel</Button>
-      </Grid>
+        <Grid container direction="column" className="bg-white rounded-lg shadow-lg p-6 w-96" style={{ gridRowGap: 16 }}>
+            <Typography variant="h6" className="mb-2">Edit the card</Typography>
+            <TextField
+            label="Title"
+            value={title}
+            onChange={e => setTitle(e.target.value)}
+            fullWidth
+            className="mb-2"
+            />
+            <TextField
+            label="Text"
+            value={text}
+            onChange={e => setText(e.target.value)}
+            fullWidth
+            multiline
+            minRows={2}
+            className="mb-2"
+            />
+            <div className="flex items-center mb-2">
+            <span className="mr-2">Color:</span>
+            <Button
+                variant="contained"
+                style={{ backgroundColor: color, minWidth: 36, minHeight: 36 }}
+                onClick={handleColorClick}
+            />
+            <Menu anchorEl={anchorEl} open={open} onClose={handleColorClose}>
+                {colorOptions.map((c) => (
+                <MenuItem key={c} onClick={() => handleColorSelect(c)}>
+                    <span style={{ backgroundColor: c, width: 24, height: 24, display: 'inline-block', borderRadius: 4, border: c === color ? '2px solid #000' : '1px solid #ccc' }} />
+                </MenuItem>
+                ))}
+            </Menu>
+            </div>
+            <Button variant="contained" color="primary" onClick={handleSave} className="mb-2">Save changes</Button>
+            <Button variant="text" color="secondary" onClick={onClose}>Cancel</Button>
+            <Button variant="contained" color="error" onClick={async () => {
+            if (window.confirm('Are you sure you want to remove this card?')) {
+                try {
+                    const token = localStorage.getItem('token') || '';
+                    await axios.delete('http://localhost:1234/api/card/', {
+                        headers: { Authorization: `Bearer ${token}` },
+                        data: { cardId: cardId }
+                });
+                    onClose();
+                    window.location.reload();
+                } catch {
+                    alert('Failed to remove card');
+                }
+            }
+            }} className="mb-2">Remove card</Button>
+        </Grid>
     </div>
   );
 }
