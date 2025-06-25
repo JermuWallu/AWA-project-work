@@ -53,7 +53,7 @@ export default function CardEdit({ cardId, initialTitle, initialText, initialCol
   };
 
   return (
-    <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-40 z-50">
+    <div className="fixed inset-0 flex items-center justify-center bg-black/50 z-50">
       <Grid container direction="column" className="bg-white rounded-lg shadow-lg p-6 w-96" style={{ gridRowGap: 16 }}>
         <Typography variant="h6" className="mb-2">Edit the card</Typography>
         <TextField

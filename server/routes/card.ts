@@ -24,6 +24,7 @@ router.post('/card', validateToken, async (req: CustomRequest, res: Response) =>
         const columnId: string = req.body.columnId;
         const title: string = req.body.title;
         const text: string = req.body.text;
+        
         if (!columnId || !title || !text) {
             res.status(400).json({ error: 'Invalid request body' });
             return;

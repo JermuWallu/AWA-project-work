@@ -1,10 +1,11 @@
-import { Link as RouterLink } from 'react-router-dom';
+import { Link as RouterLink, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useEffect, useState } from 'react';
 
 export default function Header() {
   const { i18n, t } = useTranslation();
   const [hasToken, setHasToken] = useState(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -22,6 +23,7 @@ export default function Header() {
   const handleLogout = () => {
     localStorage.removeItem('token');
     setHasToken(false);
+    navigate('/Home'); // Redirect to login page after logout
   };
 
   return (

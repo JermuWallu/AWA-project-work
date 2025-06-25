@@ -4,6 +4,9 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import Card from './Cards';
 import Column from './Column';
+import { DndContext, closestCenter, useSensor, useSensors, PointerSensor } from '@dnd-kit/core';
+import { arrayMove, SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable';
+import { DragEndEvent } from '@dnd-kit/core';
 
 interface Card {
     _id: string;
@@ -12,6 +15,18 @@ interface Card {
 }
 
 interface Column {
+    _id: string;
+    name: string;
+    cards: Card[];
+}
+
+interface DraggedColumn {
+    _id: string;
+    name: string;
+    cards: Card[];
+}
+
+interface TargetColumn {
     _id: string;
     name: string;
     cards: Card[];
@@ -53,7 +68,37 @@ export default function Board() {
         }
     };
 
-        // Check if user is logged in and fetch columns on component mount
+    const sensors = useSensors(
+        useSensor(PointerSensor, { activationConstraint: { distance: 5 } })
+    );
+
+    // Handler for column drag end
+    const handleColumnDragEnd = async (event: DragEndEvent) => {
+        const { active, over } = event;
+        if (!over || active.id === over.id) return;
+        // Find the dragged and target columns
+        const draggedColumn: DraggedColumn | undefined = columns.find(col => col._id === active.id);
+        const targetColumn: TargetColumn | undefined = columns.find(col => col._id === over.id);
+        if (!draggedColumn || !targetColumn) return;
+        // Call backend to swap/reorder columns
+        try {
+            const token: string = localStorage.getItem('token') || "";
+            await axios.put(`http://localhost:1234/api/columns/${draggedColumn._id}`, {
+                columnID: targetColumn._id
+            }, {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+            // Locally reorder columns for instant feedback
+            const oldIndex: number = columns.findIndex(col => col._id === active.id);
+            const newIndex: number = columns.findIndex(col => col._id === over.id);
+            setColumns(arrayMove(columns, oldIndex, newIndex));
+        } catch (error) {
+            alert('Failed to reorder columns');
+            console.error('Failed to reorder columns', error);
+        }
+    };
+
+    // Check if user is logged in and fetch columns on component mount
     useEffect(() => {
         const token = localStorage.getItem('token');
         if (!token) {
@@ -108,11 +153,15 @@ export default function Board() {
                     {t("Add Column")}
                 </button>
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                {columns.map(column => (
-                    <Column key={column._id} {...column} />
-                ))}
-            </div>
+            <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleColumnDragEnd}>
+                <SortableContext items={columns.map(col => col._id)} strategy={verticalListSortingStrategy}>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        {columns.map(column => (
+                            <Column key={column._id} {...column} dndId={column._id} />
+                        ))}
+                    </div>
+                </SortableContext>
+            </DndContext>
         </Suspense>
     );
 }

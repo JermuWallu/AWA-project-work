@@ -6,16 +6,36 @@ import Button from '@mui/material/Button';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import axios from 'axios';
+import { useSortable } from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
 
 interface Column {
     _id: string;
     name: string;
 }
 
-export default function Column(column: Column) {
+interface ColumnProps extends Column {
+  dndId: string;
+}
+
+export default function Column(props: ColumnProps) {
     const { t } = useTranslation();
     const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
     const open = Boolean(anchorEl);
+    const {
+      attributes,
+      listeners,
+      setNodeRef,
+      transform,
+      transition,
+      isDragging
+    } = useSortable({ id: props.dndId });
+    const style = {
+      transform: CSS.Transform.toString(transform),
+      transition,
+      opacity: isDragging ? 0.5 : 1,
+      zIndex: isDragging ? 100 : 'auto',
+    };
     const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
         setAnchorEl(event.currentTarget);
     };
@@ -23,8 +43,8 @@ export default function Column(column: Column) {
         setAnchorEl(null);
     };
     const handleRename = async () => {
-        const newName = prompt(t("Enter new column name"), column.name);
-        if (newName && newName.trim() !== "" && newName !== column.name) {
+        const newName = prompt(t("Enter new column name"), props.name);
+        if (newName && newName.trim() !== "" && newName !== props.name) {
             const token = localStorage.getItem('token') || "";
             if (!token) {
                 alert(t("You are not logged in, please log in to rename a column."));
@@ -32,7 +52,7 @@ export default function Column(column: Column) {
             }
             try {
                 const response = await axios.put(
-                    `http://localhost:1234/api/column/${column._id}`,
+                    `http://localhost:1234/api/column/${props._id}`,
                     { name: newName },
                     {
                         headers: {
@@ -67,7 +87,7 @@ export default function Column(column: Column) {
         }
         try {
             const response = await axios.delete(
-            `http://localhost:1234/api/column/${column._id}`,
+            `http://localhost:1234/api/column/${props._id}`,
             {
                 headers: {
                 Authorization: `Bearer ${token}`
@@ -93,7 +113,7 @@ export default function Column(column: Column) {
             return;
         }
         const newCard = {
-            columnId: column._id,
+            columnId: props._id,
             title: 'New Card',
             text: 'This is a new card'
         };
@@ -115,9 +135,9 @@ export default function Column(column: Column) {
 
     return (
         <Suspense fallback={"Loading..."}>
-        <div key={column._id} className="bg-white shadow-md rounded-lg p-4">
+        <div ref={setNodeRef} style={style} {...attributes} {...listeners} className="bg-white shadow-md rounded-lg p-4">
             <div className="flex justify-between items-center mb-4">
-                <h2 className="text-xl font-semibold">{column.name}</h2>
+                <h2 className="text-xl font-semibold">{props.name}</h2>
                 <h1 className="relative group">
                     <Button
                         id="column-options-button"
@@ -146,7 +166,7 @@ export default function Column(column: Column) {
                 </h1>
             </div>
             <div id="cards-div" className="space-y-4 mb-4">
-              <Cards _id={column._id}/>
+              <Cards _id={props._id}/>
             </div>
             <Button
             variant="contained"
