@@ -40,7 +40,9 @@ exports.CardSchema = new mongoose_1.Schema({
     order: { type: String, required: true },
     title: { type: String, required: true },
     text: { type: String },
-    color: { type: String, default: "#ffffff" } // Default color set to white
+    color: { type: String, default: "#ffffff" }, // Default color set to white
+    timeCreated: { type: Date, default: Date.now },
+    timeUpdated: { type: Date, default: Date.now }
 });
 const Card = mongoose_1.default.model("Card", exports.CardSchema);
 exports.Card = Card;

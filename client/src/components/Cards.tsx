@@ -13,6 +13,8 @@ interface Card {
     text: string;
     color: string;
     columnId: string;
+    timeCreated?: Date;
+    timeUpdated?: Date;
 }
 
 interface Column {
@@ -44,6 +46,10 @@ function SortableCard({ card, onEdit }: { card: Card, onEdit: (card: Card) => vo
             </div>
             <hr className="mb-2" />
             <p>{card.text}</p>
+            <div className="mt-2 text-xs text-gray-500">
+                <div>Created: {card.timeCreated ? new Date(card.timeCreated).toLocaleString() : "N/A"}</div>
+                <div>Updated: {card.timeUpdated ? new Date(card.timeUpdated).toLocaleString() : "N/A"}</div>
+            </div>
         </div>
     );
 }
@@ -83,7 +89,12 @@ export default function Cards(column: Column) {
     };
     const handleEditSave = (title: string, text: string, color: string) => {
         // Update the card in the local state after save
-        setCards(cards => cards.map(c => c._id === editingCard?._id ? { ...c, title, text, color } : c));
+        // Note: doesn't use server data, assumes server will handle updates
+        setCards(cards => cards.map(cardCurrent => 
+            cardCurrent._id === editingCard?._id 
+            ? { ...cardCurrent, title, text, color, timeUpdated: new Date() } 
+            : cardCurrent
+        ));
     };
 
     const sensors = useSensors(

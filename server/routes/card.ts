@@ -24,7 +24,6 @@ router.post('/card', validateToken, async (req: CustomRequest, res: Response) =>
         const columnId: string = req.body.columnId;
         const title: string = req.body.title;
         const text: string = req.body.text;
-        
         if (!columnId || !title || !text) {
             res.status(400).json({ error: 'Invalid request body' });
             return;
@@ -114,7 +113,7 @@ router.put('/card/:id', validateToken, async (req: CustomRequest, res: Response)
             res.status(400).json({ error: 'Invalid request body' });
             return;
         }
-        const updatedCard = await Card.findByIdAndUpdate(id, { title, text, color }, { new: true });
+        const updatedCard = await Card.findByIdAndUpdate(id, { title, text, color, timeUpdated: Date.now() }, { new: true });
         if (!updatedCard) {
             res.status(404).json({ error: 'Card not found' });
             return;

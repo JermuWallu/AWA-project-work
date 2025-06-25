@@ -6,6 +6,8 @@ interface ICard extends Document {
     title: string;
     text: string;
     color: string;
+    timeCreated?: Date;
+    timeUpdated?: Date;
 }
 
 export const CardSchema = new Schema<ICard>({
@@ -13,7 +15,9 @@ export const CardSchema = new Schema<ICard>({
     order: { type: String, required: true },
     title: { type: String, required: true },
     text: { type: String },
-    color: { type: String, default: "#ffffff" } // Default color set to white
+    color: { type: String, default: "#ffffff" }, // Default color set to white
+    timeCreated: { type: Date, default: Date.now },
+    timeUpdated: { type: Date, default: Date.now }
 });
 
 const Card: mongoose.Model<ICard> = mongoose.model<ICard>("Card", CardSchema)
