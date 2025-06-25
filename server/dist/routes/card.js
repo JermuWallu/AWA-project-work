@@ -99,4 +99,24 @@ router.delete('/card/', validateToken_1.validateToken, async (req, res) => {
         res.status(500).json({ error: 'Failed to remove card' });
     }
 });
+// Edit a card
+router.put('/card/:id', validateToken_1.validateToken, async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { title, text, color } = req.body;
+        if (!title || !text || !color) {
+            res.status(400).json({ error: 'Invalid request body' });
+            return;
+        }
+        const updatedCard = await Card_1.Card.findByIdAndUpdate(id, { title, text, color }, { new: true });
+        if (!updatedCard) {
+            res.status(404).json({ error: 'Card not found' });
+            return;
+        }
+        res.status(200).json(updatedCard);
+    }
+    catch (error) {
+        res.status(500).json({ error: 'Failed to edit card' });
+    }
+});
 exports.default = router;

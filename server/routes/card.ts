@@ -93,7 +93,6 @@ router.put('/card/swap', validateToken, async (req: CustomRequest, res: Response
     }
 });
 
-
 // Remove a card
 router.delete('/card/', validateToken, async (req: CustomRequest, res: Response) => {
     try {
@@ -102,6 +101,26 @@ router.delete('/card/', validateToken, async (req: CustomRequest, res: Response)
         res.status(200).json({ message: 'Card removed' });
     } catch (error) {
         res.status(500).json({ error: 'Failed to remove card' });
+    }
+});
+
+// Edit a card
+router.put('/card/:id', validateToken, async (req: CustomRequest, res: Response) => {
+    try {
+        const { id } = req.params;
+        const { title, text, color } = req.body;
+        if (!title || !text || !color) {
+            res.status(400).json({ error: 'Invalid request body' });
+            return;
+        }
+        const updatedCard = await Card.findByIdAndUpdate(id, { title, text, color }, { new: true });
+        if (!updatedCard) {
+            res.status(404).json({ error: 'Card not found' });
+            return;
+        }
+        res.status(200).json(updatedCard);
+    } catch (error) {
+        res.status(500).json({ error: 'Failed to edit card' });
     }
 });
 

@@ -6,7 +6,6 @@ import Button from '@mui/material/Button';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
 
 interface Column {
     _id: string;
@@ -15,7 +14,6 @@ interface Column {
 
 export default function Column(column: Column) {
     const { t } = useTranslation();
-    const navigate = useNavigate();
     const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
     const open = Boolean(anchorEl);
     const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {

@@ -37,9 +37,10 @@ exports.Card = exports.CardSchema = void 0;
 const mongoose_1 = __importStar(require("mongoose"));
 exports.CardSchema = new mongoose_1.Schema({
     columnID: { type: String, required: true },
+    order: { type: String, required: true },
     title: { type: String, required: true },
     text: { type: String },
-    order: { type: String, required: true }
+    color: { type: String, default: "#ffffff" } // Default color set to white
 });
 const Card = mongoose_1.default.model("Card", exports.CardSchema);
 exports.Card = Card;
