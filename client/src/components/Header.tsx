@@ -1,6 +1,6 @@
-import { Link as RouterLink, useNavigate } from 'react-router-dom';
-import { useTranslation } from 'react-i18next';
-import { useEffect, useState } from 'react';
+import { Link as RouterLink, useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
+import { useEffect, useState } from "react";
 
 export default function Header() {
   const { i18n, t } = useTranslation();
@@ -8,11 +8,11 @@ export default function Header() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem("token");
     if (token) {
-        setHasToken(true);
+      setHasToken(true);
     } else {
-        setHasToken(false);
+      setHasToken(false);
     }
   }, []);
 
@@ -21,9 +21,9 @@ export default function Header() {
   };
 
   const handleLogout = () => {
-    localStorage.removeItem('token');
+    localStorage.removeItem("token");
     setHasToken(false);
-    navigate('/Home'); // Redirect to login page after logout
+    navigate("/Home"); // Redirect to login page after logout
   };
 
   return (
@@ -32,35 +32,35 @@ export default function Header() {
         <div className="flex space-x-4">
           <button
             className="text-white hover:text-gray-300"
-            onClick={() => changeLanguage('en')}
+            onClick={() => changeLanguage("en")}
           >
             EN
           </button>
           <button
             className="text-white hover:text-gray-300"
-            onClick={() => changeLanguage('fi')}
+            onClick={() => changeLanguage("fi")}
           >
             FI
           </button>
         </div>
-        <h1 className="text-xl font-bold">{t('header')}</h1>
+        <h1 className="text-xl font-bold">{t("header")}</h1>
         <nav className="flex space-x-4">
           <RouterLink to="/" className="text-white hover:text-gray-300">
-            {t('home')}
+            {t("home")}
           </RouterLink>
           <RouterLink to="/board" className="text-white hover:text-gray-300">
-            {t('board')}
+            {t("board")}
           </RouterLink>
           {hasToken ? (
             <button
               onClick={handleLogout}
               className="text-white hover:text-gray-300"
             >
-              {t('logout')}
+              {t("logout")}
             </button>
           ) : (
             <RouterLink to="/login" className="text-white hover:text-gray-300">
-              {t('login')}
+              {t("login")}
             </RouterLink>
           )}
         </nav>

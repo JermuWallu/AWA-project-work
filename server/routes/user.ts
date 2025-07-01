@@ -1,81 +1,75 @@
-import { Request, Response, Router } from 'express'
+import { Request, Response, Router } from "express";
 // import { body, Result, ValidationError, validationResult } from 'express-validator' // ei toimi jostain syystä
-import bcrypt from 'bcrypt'
-import jwt, { JwtPayload } from 'jsonwebtoken'
-import { validateToken } from '../middleware/validateToken'
-import {User, IUser} from '../models/User';
+import bcrypt from "bcrypt";
+import jwt, { JwtPayload } from "jsonwebtoken";
+import { validateToken } from "../middleware/validateToken";
+import { User, IUser } from "../models/User";
 
-const router: Router = Router()
+const router: Router = Router();
 
-router.post("/register",
-    async (req: Request, res: Response) => {
-        try {
-            // express-validator doesen't work so cant do better validation
-            if (!req.body.email || !req.body.password) {
-                res.status(400).json({message: "Bad request"})
-                return
-            }
-            const existingUser: IUser | null = await User.findOne({ email: req.body.email })
-            if (existingUser) {
-                res.status(403).json({email: "email already in use"})
-                return
-            }
-
-            const salt: string = bcrypt.genSaltSync(10)
-            const hash: string = bcrypt.hashSync(req.body.password, salt)
-
-            User.create({email: req.body.email, password: hash})
-
-            res.status(200).json({message: "User registered successfully"})
-            return
-
-        } catch (error: any) {
-            console.error(`Error during registration: ${error}`)
-            res.status(500).json({error: "Internal Server Error"})
-            return
-        }
-
+router.post("/register", async (req: Request, res: Response) => {
+  try {
+    // express-validator doesen't work so cant do better validation
+    if (!req.body.email || !req.body.password) {
+      res.status(400).json({ message: "Bad request" });
+      return;
     }
-)
+    const existingUser: IUser | null = await User.findOne({
+      email: req.body.email,
+    });
+    if (existingUser) {
+      res.status(403).json({ email: "email already in use" });
+      return;
+    }
+
+    const salt: string = bcrypt.genSaltSync(10);
+    const hash: string = bcrypt.hashSync(req.body.password, salt);
+
+    User.create({ email: req.body.email, password: hash });
+
+    res.status(200).json({ message: "User registered successfully" });
+    return;
+  } catch (error: any) {
+    console.error(`Error during registration: ${error}`);
+    res.status(500).json({ error: "Internal Server Error" });
+    return;
+  }
+});
 
 // dont ever do this in real world
-router.get("/list",
-    async (req: Request, res: Response) =>{
-        res.status(200).json(User)
+router.get("/list", async (req: Request, res: Response) => {
+  res.status(200).json(User);
+});
+
+router.post("/login", async (req: Request, res: Response) => {
+  try {
+    const user: IUser | null = await User.findOne({ email: req.body.email });
+
+    console.log("User:", user);
+
+    if (!user) {
+      res.status(401).json({ message: "Login failed" });
+      return;
     }
-)
 
-router.post("/login",
-    async (req: Request, res: Response) => {
-        try {
-            const user: IUser | null = await User.findOne({ email: req.body.email })
+    if (bcrypt.compareSync(req.body.password, user.password)) {
+      const jwtPayload: JwtPayload = {
+        email: user.email,
+      };
+      const token: string = jwt.sign(jwtPayload, process.env.SECRET as string, {
+        expiresIn: "1h",
+      });
 
-            console.log("User:", user)
-
-            if (!user) {
-                res.status(401).json({message: "Login failed"})
-                return
-            }
-
-            if (bcrypt.compareSync(req.body.password, user.password)) {
-                const jwtPayload: JwtPayload = {
-                    email: user.email
-                }
-                const token: string = jwt.sign(jwtPayload, process.env.SECRET as string, { expiresIn: "1h"})
-
-                res.status(200).json({success: true, token, expiresIn: "1h"})
-                return
-            }
-            res.status(401).json({message: "Login failed"})
-            return
-
-
-        } catch(error: any) {
-            console.error(`Error during user login: ${error}`)
-            res.status(500).json({ error: 'Internal Server Error' })
-            return
-        }
+      res.status(200).json({ success: true, token, expiresIn: "1h" });
+      return;
     }
-)
+    res.status(401).json({ message: "Login failed" });
+    return;
+  } catch (error: any) {
+    console.error(`Error during user login: ${error}`);
+    res.status(500).json({ error: "Internal Server Error" });
+    return;
+  }
+});
 
-export default router
+export default router;
