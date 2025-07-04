@@ -2,6 +2,7 @@ import { Request, Response, Router } from "express";
 // import { body, Result, ValidationError, validationResult } from 'express-validator' // ei toimi jostain syystä
 import { validateToken, CustomRequest } from "../middleware/validateToken";
 import { Column, IColumn } from "../models/Column";
+import { User } from "../models/User";
 
 const router: Router = Router();
 
@@ -14,6 +15,31 @@ router.get(
       const userId = req.user?.email;
       console.log("User ID:", userId);
       const columns = await Column.find({ owner: userId }).sort({ order: 1 });
+      res.status(200).json(columns);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to get columns" });
+    }
+  },
+);
+
+// Get all columns for a specific user (admin only)
+router.get(
+  "/columns/:userEmail",
+  validateToken,
+  async (req: CustomRequest, res: Response) => {
+    try {
+      const requestingUserEmail = req.user?.email;
+      const { userEmail } = req.params;
+
+      // Only allow if requesting user is admin or accessing their own data
+      const requestingUser = await User.findOne({ email: requestingUserEmail });
+      if (!requestingUser?.isAdmin && requestingUserEmail !== userEmail) {
+        res.status(403).json({ error: "Access denied" });
+        return;
+      }
+
+      console.log("Fetching columns for user:", userEmail);
+      const columns = await Column.find({ owner: userEmail }).sort({ order: 1 });
       res.status(200).json(columns);
     } catch (error) {
       res.status(500).json({ error: "Failed to get columns" });

@@ -30,6 +30,7 @@ export default function Login() {
       if (response.status === 200) {
         const data = response.data;
         localStorage.setItem("token", data.token);
+        localStorage.setItem("isAdmin", data.isAdmin.toString());
         window.location.href = "/home";
       } else {
         console.error("Error during login:", response);
@@ -52,6 +53,7 @@ export default function Login() {
     const email = (document.getElementById("email") as HTMLInputElement).value;
     const password = (document.getElementById("password") as HTMLInputElement)
       .value;
+    const isAdmin = (document.getElementById("isAdmin") as HTMLInputElement).checked;
     if (!email || !password) {
       alert("Please fill in all fields");
       return;
@@ -60,7 +62,7 @@ export default function Login() {
     try {
       const response = await axios.post(
         "http://localhost:1234/user/register",
-        { email, password },
+        { email, password, isAdmin },
         {
           headers: {
             "Content-Type": "application/json",
@@ -116,6 +118,17 @@ export default function Login() {
               required
               className="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
+          </div>
+          <div className="mb-4">
+            <label className="flex items-center">
+              <input
+                type="checkbox"
+                id="isAdmin"
+                name="isAdmin"
+                className="mr-2"
+              />
+              <span className="text-gray-700 font-medium">Register as Admin</span>
+            </label>
           </div>
           <div className="flex justify-between">
             <button

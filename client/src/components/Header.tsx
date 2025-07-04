@@ -5,14 +5,18 @@ import { useEffect, useState } from "react";
 export default function Header() {
   const { i18n, t } = useTranslation();
   const [hasToken, setHasToken] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
     const token = localStorage.getItem("token");
+    const adminStatus = localStorage.getItem("isAdmin") === "true";
     if (token) {
       setHasToken(true);
+      setIsAdmin(adminStatus);
     } else {
       setHasToken(false);
+      setIsAdmin(false);
     }
   }, []);
 
@@ -22,7 +26,9 @@ export default function Header() {
 
   const handleLogout = () => {
     localStorage.removeItem("token");
+    localStorage.removeItem("isAdmin");
     setHasToken(false);
+    setIsAdmin(false);
     navigate("/Home"); // Redirect to login page after logout
   };
 
@@ -51,6 +57,11 @@ export default function Header() {
           <RouterLink to="/board" className="text-white hover:text-gray-300">
             {t("board")}
           </RouterLink>
+          {hasToken && isAdmin && (
+            <RouterLink to="/admin" className="text-white hover:text-gray-300">
+              Admin
+            </RouterLink>
+          )}
           {hasToken ? (
             <button
               onClick={handleLogout}

@@ -1,7 +1,7 @@
 import { useTranslation } from "react-i18next";
 import { Suspense, useEffect, useState } from "react";
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import Card from "./Cards";
 import Column from "./Column";
 import {
@@ -46,7 +46,9 @@ export default function Board() {
   const { t } = useTranslation();
   const [columns, setColumns] = useState<Column[]>([]);
   const navigate = useNavigate();
+  const { userEmail } = useParams();
   const [loggedIn, setLoggedIn] = useState(false);
+  const [isViewingOtherUser, setIsViewingOtherUser] = useState(false);
 
   // Function to add a new column
   const addColumn = async () => {
@@ -131,17 +133,20 @@ export default function Board() {
       alert("You are not logged in, redirecting to login page...");
     } else {
       setLoggedIn(true);
+      setIsViewingOtherUser(!!userEmail);
+      
       // Function to fetch columns from the API
       const fetchColumns = async (token: string) => {
         try {
-          const response = await axios.get(
-            "http://localhost:1234/api/columns",
-            {
-              headers: {
-                Authorization: `Bearer ${token}`,
-              },
+          const endpoint = userEmail 
+            ? `http://localhost:1234/api/columns/${encodeURIComponent(userEmail)}`
+            : "http://localhost:1234/api/columns";
+            
+          const response = await axios.get(endpoint, {
+            headers: {
+              Authorization: `Bearer ${token}`,
             },
-          );
+          });
           setColumns(response.data);
         } catch (error) {
           if (axios.isAxiosError(error) && error.response) {
@@ -163,17 +168,21 @@ export default function Board() {
       };
       fetchColumns(token);
     }
-  }, [setColumns, navigate]);
+  }, [setColumns, navigate, userEmail]);
   return (
     <Suspense fallback="loading">
       <div className="p-6 bg-gray-100">
-        <h1 className="text-3xl font-bold mb-6">{t("kanban board")}</h1>
-        <button
-          onClick={addColumn}
-          className="mb-6 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
-        >
-          {t("Add Column")}
-        </button>
+        <h1 className="text-3xl font-bold mb-6">
+          {userEmail ? `${userEmail}'s Board` : t("kanban board")}
+        </h1>
+        {!isViewingOtherUser && (
+          <button
+            onClick={addColumn}
+            className="mb-6 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+          >
+            {t("Add Column")}
+          </button>
+        )}
       </div>
       <DndContext
         sensors={sensors}
