@@ -6,14 +6,21 @@ import TextField from "@mui/material/TextField";
 import Grid from "@mui/material/Grid";
 import Typography from "@mui/material/Typography";
 import axios from "axios";
+import { useTranslation } from "react-i18next";
 
 interface CardEditProps {
   cardId: string;
   initialTitle: string;
   initialText: string;
   initialColor: string;
+  initialTimeSpent?: number;
   onClose: () => void;
-  onSave: (title: string, text: string, color: string) => void;
+  onSave: (
+    title: string,
+    text: string,
+    color: string,
+    timeSpent: number,
+  ) => void;
 }
 
 const colorOptions = [
@@ -32,12 +39,15 @@ export default function CardEdit({
   initialTitle,
   initialText,
   initialColor,
+  initialTimeSpent = 0,
   onClose,
   onSave,
 }: CardEditProps) {
+  const { t } = useTranslation();
   const [title, setTitle] = useState(initialTitle);
   const [text, setText] = useState(initialText);
   const [color, setColor] = useState(initialColor);
+  const [timeSpent, setTimeSpent] = useState(initialTimeSpent);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
 
@@ -60,10 +70,10 @@ export default function CardEdit({
         { title, text, color },
         { headers: { Authorization: `Bearer ${token}` } },
       );
-      onSave(title, text, color);
+      onSave(title, text, color, timeSpent);
       onClose();
     } catch {
-      alert("Failed to save changes");
+      alert(t("Failed to save changes"));
     }
   };
 
@@ -76,17 +86,17 @@ export default function CardEdit({
         style={{ gridRowGap: 16 }}
       >
         <Typography variant="h6" className="mb-2">
-          Edit the card
+          {t("Edit the card")}
         </Typography>
         <TextField
-          label="Title"
+          label={t("Title")}
           value={title}
           onChange={(e) => setTitle(e.target.value)}
           fullWidth
           className="mb-2"
         />
         <TextField
-          label="Text"
+          label={t("Text")}
           value={text}
           onChange={(e) => setText(e.target.value)}
           fullWidth
@@ -94,8 +104,20 @@ export default function CardEdit({
           minRows={2}
           className="mb-2"
         />
+        <TextField
+          label={t("Time Spent (minutes)")}
+          type="number"
+          value={timeSpent}
+          onChange={(e) =>
+            setTimeSpent(Math.max(0, parseInt(e.target.value) || 0))
+          }
+          fullWidth
+          className="mb-2"
+          inputProps={{ min: 0 }}
+          helperText={t("Enter time spent on this task in minutes")}
+        />
         <div className="flex items-center mb-2">
-          <span className="mr-2">Color:</span>
+          <span className="mr-2">{t("Color")}:</span>
           <Button
             variant="contained"
             style={{ backgroundColor: color, minWidth: 36, minHeight: 36 }}
@@ -124,16 +146,18 @@ export default function CardEdit({
           onClick={handleSave}
           className="mb-2"
         >
-          Save changes
+          {t("Save changes")}
         </Button>
         <Button variant="text" color="secondary" onClick={onClose}>
-          Cancel
+          {t("Cancel")}
         </Button>
         <Button
           variant="contained"
           color="error"
           onClick={async () => {
-            if (window.confirm("Are you sure you want to remove this card?")) {
+            if (
+              window.confirm(t("Are you sure you want to remove this card?"))
+            ) {
               try {
                 const token = localStorage.getItem("token") || "";
                 await axios.delete("http://localhost:1234/api/card/", {
@@ -143,13 +167,13 @@ export default function CardEdit({
                 onClose();
                 window.location.reload();
               } catch {
-                alert("Failed to remove card");
+                alert(t("Failed to remove card"));
               }
             }
           }}
           className="mb-2"
         >
-          Remove card
+          {t("Remove card")}
         </Button>
       </Grid>
     </div>

@@ -25,10 +25,10 @@ router.post("/register", async (req: Request, res: Response) => {
     const salt: string = bcrypt.genSaltSync(10);
     const hash: string = bcrypt.hashSync(req.body.password, salt);
 
-    User.create({ 
-      email: req.body.email, 
+    User.create({
+      email: req.body.email,
       password: hash,
-      isAdmin: req.body.isAdmin || false
+      isAdmin: req.body.isAdmin || false,
     });
 
     res.status(200).json({ message: "User registered successfully" });
@@ -46,15 +46,19 @@ router.get("/list", async (req: Request, res: Response) => {
 });
 
 // Get all users for admin panel
-router.get("/admin/users", validateToken, async (req: Request, res: Response) => {
-  try {
-    const users = await User.find({}, { password: 0 }); // Exclude password field
-    res.status(200).json(users);
-  } catch (error: any) {
-    console.error(`Error fetching users: ${error}`);
-    res.status(500).json({ error: "Internal Server Error" });
-  }
-});
+router.get(
+  "/admin/users",
+  validateToken,
+  async (req: Request, res: Response) => {
+    try {
+      const users = await User.find({}, { password: 0 }); // Exclude password field
+      res.status(200).json(users);
+    } catch (error: any) {
+      console.error(`Error fetching users: ${error}`);
+      res.status(500).json({ error: "Internal Server Error" });
+    }
+  },
+);
 
 router.post("/login", async (req: Request, res: Response) => {
   try {
@@ -76,7 +80,9 @@ router.post("/login", async (req: Request, res: Response) => {
         expiresIn: "1h",
       });
 
-      res.status(200).json({ success: true, token, expiresIn: "1h", isAdmin: user.isAdmin });
+      res
+        .status(200)
+        .json({ success: true, token, expiresIn: "1h", isAdmin: user.isAdmin });
       return;
     }
     res.status(401).json({ message: "Login failed" });

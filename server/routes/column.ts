@@ -39,7 +39,9 @@ router.get(
       }
 
       console.log("Fetching columns for user:", userEmail);
-      const columns = await Column.find({ owner: userEmail }).sort({ order: 1 });
+      const columns = await Column.find({ owner: userEmail }).sort({
+        order: 1,
+      });
       res.status(200).json(columns);
     } catch (error) {
       res.status(500).json({ error: "Failed to get columns" });

@@ -1,7 +1,9 @@
 "use strict";
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
+var __importDefault =
+  (this && this.__importDefault) ||
+  function (mod) {
+    return mod && mod.__esModule ? mod : { default: mod };
+  };
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = require("express");
 // import { body, Result, ValidationError, validationResult } from 'express-validator' // ei toimi jostain syystä
@@ -11,76 +13,79 @@ const validateToken_1 = require("../middleware/validateToken");
 const User_1 = require("../models/User");
 const router = (0, express_1.Router)();
 router.post("/register", async (req, res) => {
-    try {
-        // express-validator doesen't work so cant do better validation
-        if (!req.body.email || !req.body.password) {
-            res.status(400).json({ message: "Bad request" });
-            return;
-        }
-        const existingUser = await User_1.User.findOne({
-            email: req.body.email,
-        });
-        if (existingUser) {
-            res.status(403).json({ email: "email already in use" });
-            return;
-        }
-        const salt = bcrypt_1.default.genSaltSync(10);
-        const hash = bcrypt_1.default.hashSync(req.body.password, salt);
-        User_1.User.create({
-            email: req.body.email,
-            password: hash,
-            isAdmin: req.body.isAdmin || false
-        });
-        res.status(200).json({ message: "User registered successfully" });
-        return;
+  try {
+    // express-validator doesen't work so cant do better validation
+    if (!req.body.email || !req.body.password) {
+      res.status(400).json({ message: "Bad request" });
+      return;
     }
-    catch (error) {
-        console.error(`Error during registration: ${error}`);
-        res.status(500).json({ error: "Internal Server Error" });
-        return;
+    const existingUser = await User_1.User.findOne({
+      email: req.body.email,
+    });
+    if (existingUser) {
+      res.status(403).json({ email: "email already in use" });
+      return;
     }
+    const salt = bcrypt_1.default.genSaltSync(10);
+    const hash = bcrypt_1.default.hashSync(req.body.password, salt);
+    User_1.User.create({
+      email: req.body.email,
+      password: hash,
+      isAdmin: req.body.isAdmin || false,
+    });
+    res.status(200).json({ message: "User registered successfully" });
+    return;
+  } catch (error) {
+    console.error(`Error during registration: ${error}`);
+    res.status(500).json({ error: "Internal Server Error" });
+    return;
+  }
 });
 // dont ever do this in real world
 router.get("/list", async (req, res) => {
-    res.status(200).json(User_1.User);
+  res.status(200).json(User_1.User);
 });
 // Get all users for admin panel
 router.get("/admin/users", validateToken_1.validateToken, async (req, res) => {
-    try {
-        const users = await User_1.User.find({}, { password: 0 }); // Exclude password field
-        res.status(200).json(users);
-    }
-    catch (error) {
-        console.error(`Error fetching users: ${error}`);
-        res.status(500).json({ error: "Internal Server Error" });
-    }
+  try {
+    const users = await User_1.User.find({}, { password: 0 }); // Exclude password field
+    res.status(200).json(users);
+  } catch (error) {
+    console.error(`Error fetching users: ${error}`);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
 });
 router.post("/login", async (req, res) => {
-    try {
-        const user = await User_1.User.findOne({ email: req.body.email });
-        console.log("User:", user);
-        if (!user) {
-            res.status(401).json({ message: "Login failed" });
-            return;
-        }
-        if (bcrypt_1.default.compareSync(req.body.password, user.password)) {
-            const jwtPayload = {
-                email: user.email,
-                isAdmin: user.isAdmin,
-            };
-            const token = jsonwebtoken_1.default.sign(jwtPayload, process.env.SECRET, {
-                expiresIn: "1h",
-            });
-            res.status(200).json({ success: true, token, expiresIn: "1h", isAdmin: user.isAdmin });
-            return;
-        }
-        res.status(401).json({ message: "Login failed" });
-        return;
+  try {
+    const user = await User_1.User.findOne({ email: req.body.email });
+    console.log("User:", user);
+    if (!user) {
+      res.status(401).json({ message: "Login failed" });
+      return;
     }
-    catch (error) {
-        console.error(`Error during user login: ${error}`);
-        res.status(500).json({ error: "Internal Server Error" });
-        return;
+    if (bcrypt_1.default.compareSync(req.body.password, user.password)) {
+      const jwtPayload = {
+        email: user.email,
+        isAdmin: user.isAdmin,
+      };
+      const token = jsonwebtoken_1.default.sign(
+        jwtPayload,
+        process.env.SECRET,
+        {
+          expiresIn: "1h",
+        },
+      );
+      res
+        .status(200)
+        .json({ success: true, token, expiresIn: "1h", isAdmin: user.isAdmin });
+      return;
     }
+    res.status(401).json({ message: "Login failed" });
+    return;
+  } catch (error) {
+    console.error(`Error during user login: ${error}`);
+    res.status(500).json({ error: "Internal Server Error" });
+    return;
+  }
 });
 exports.default = router;

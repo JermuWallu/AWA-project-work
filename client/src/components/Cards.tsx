@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
 import EditIcon from "@mui/icons-material/Edit";
+import AccessTimeIcon from "@mui/icons-material/AccessTime";
 import IconButton from "@mui/material/IconButton";
 import CardEdit from "./CardEdit";
 import {
@@ -18,12 +19,25 @@ import {
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import type { DragEndEvent as DndKitDragEndEvent } from "@dnd-kit/core";
+
+// Utility function to format time in minutes to hours and minutes
+const formatTime = (minutes: number): string => {
+  if (minutes === 0) return "0m";
+  const hours = Math.floor(minutes / 60);
+  const remainingMinutes = minutes % 60;
+
+  if (hours === 0) return `${remainingMinutes}m`;
+  if (remainingMinutes === 0) return `${hours}h`;
+  return `${hours}h ${remainingMinutes}m`;
+};
+
 interface Card {
   _id: string;
   title: string;
   text: string;
   color: string;
   columnId: string;
+  timeSpent?: number;
   timeCreated?: Date;
   timeUpdated?: Date;
 }
@@ -59,17 +73,23 @@ function SortableCard({
       style={{ ...style, backgroundColor: card.color }}
       {...attributes}
       {...listeners}
-      className="border border-gray-400 rounded p-4 relative"
+      className="border border-gray-600 rounded p-4 relative"
     >
       <div className="flex items-center mb-2">
         <h3 className="text-lg font-medium flex-1">{card.title}</h3>
+        <div className="flex items-center mr-2">
+          <AccessTimeIcon fontSize="small" className="mr-1 text-black" />
+          <span className="text-sm text-black font-medium">
+            {formatTime(card.timeSpent || 0)}
+          </span>
+        </div>
         <IconButton size="small" onClick={() => onEdit(card)} className="ml-2">
           <EditIcon fontSize="small" />
         </IconButton>
       </div>
       <hr className="mb-2" />
       <p>{card.text}</p>
-      <div className="mt-2 text-xs text-gray-500">
+      <div className="mt-2 text-xs text-gray-700">
         <div>
           Created:{" "}
           {card.timeCreated
@@ -100,7 +120,7 @@ export default function Cards(column: Column) {
         return;
       }
       const response = await axios.get(
-        "http://localhost:1234/api/cards/" + columnId,
+        `http://localhost:1234/api/cards/` + columnId,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -123,13 +143,25 @@ export default function Cards(column: Column) {
   const handleEditClose = () => {
     setEditingCard(null);
   };
-  const handleEditSave = (title: string, text: string, color: string) => {
+  const handleEditSave = (
+    title: string,
+    text: string,
+    color: string,
+    timeSpent: number,
+  ) => {
     // Update the card in the local state after save
     // Note: doesn't use server data, assumes server will handle updates
     setCards((cards) =>
       cards.map((cardCurrent) =>
         cardCurrent._id === editingCard?._id
-          ? { ...cardCurrent, title, text, color, timeUpdated: new Date() }
+          ? {
+              ...cardCurrent,
+              title,
+              text,
+              color,
+              timeSpent,
+              timeUpdated: new Date(),
+            }
           : cardCurrent,
       ),
     );
@@ -160,7 +192,7 @@ export default function Cards(column: Column) {
       const token: string = localStorage.getItem("token") || "";
       axios
         .put(
-          "http://localhost:1234/api/card/swap",
+          `http://localhost:1234/api/card/swap`,
           {
             cardId: draggedCard._id,
             cardId2: targetCard._id,
@@ -221,6 +253,7 @@ export default function Cards(column: Column) {
           initialTitle={editingCard.title}
           initialText={editingCard.text}
           initialColor={editingCard.color}
+          initialTimeSpent={editingCard.timeSpent || 0}
           onClose={handleEditClose}
           onSave={handleEditSave}
         />

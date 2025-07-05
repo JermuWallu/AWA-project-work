@@ -53,7 +53,8 @@ export default function Login() {
     const email = (document.getElementById("email") as HTMLInputElement).value;
     const password = (document.getElementById("password") as HTMLInputElement)
       .value;
-    const isAdmin = (document.getElementById("isAdmin") as HTMLInputElement).checked;
+    const isAdmin = (document.getElementById("isAdmin") as HTMLInputElement)
+      .checked;
     if (!email || !password) {
       alert("Please fill in all fields");
       return;
@@ -127,7 +128,9 @@ export default function Login() {
                 name="isAdmin"
                 className="mr-2"
               />
-              <span className="text-gray-700 font-medium">Register as Admin</span>
+              <span className="text-gray-700 font-medium">
+                Register as Admin
+              </span>
             </label>
           </div>
           <div className="flex justify-between">

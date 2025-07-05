@@ -134,14 +134,14 @@ export default function Board() {
     } else {
       setLoggedIn(true);
       setIsViewingOtherUser(!!userEmail);
-      
+
       // Function to fetch columns from the API
       const fetchColumns = async (token: string) => {
         try {
-          const endpoint = userEmail 
+          const endpoint = userEmail
             ? `http://localhost:1234/api/columns/${encodeURIComponent(userEmail)}`
             : "http://localhost:1234/api/columns";
-            
+
           const response = await axios.get(endpoint, {
             headers: {
               Authorization: `Bearer ${token}`,

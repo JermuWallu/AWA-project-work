@@ -6,6 +6,7 @@ interface ICard extends Document {
   title: string;
   text: string;
   color: string;
+  timeSpent: number; // Time spent in minutes
   timeCreated?: Date;
   timeUpdated?: Date;
 }
@@ -16,6 +17,7 @@ export const CardSchema = new Schema<ICard>({
   title: { type: String, required: true },
   text: { type: String },
   color: { type: String, default: "#ffffff" }, // Default color set to white
+  timeSpent: { type: Number, default: 0 }, // Time spent in minutes, default to 0
   timeCreated: { type: Date, default: Date.now },
   timeUpdated: { type: Date, default: Date.now },
 });
