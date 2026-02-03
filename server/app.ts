@@ -14,7 +14,7 @@ const app: Express = express();
 const port: number = parseInt(process.env.PORT as string) || 8001;
 
 // Mongoose and mongoDB
-const mongoDB: string = "mongodb://127.0.0.1:27017/testdb";
+const mongoDB: string = process.env.MONGODB_URI || "mongodb://127.0.0.1:27017/testdb";
 mongoose.connect(mongoDB);
 mongoose.Promise = Promise;
 const db: Connection = mongoose.connection;
