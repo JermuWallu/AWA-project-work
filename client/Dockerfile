@@ -1,7 +1,7 @@
 # Build stage
 FROM node:20-alpine AS build
 
-WORKDIR /app
+WORKDIR /
 
 # Copy package files
 COPY package*.json ./
@@ -12,22 +12,8 @@ RUN npm install
 # Copy source code
 COPY . .
 
-# Build the application
-RUN npm run build
-
-# Production stage
-FROM node:20-alpine
-
-WORKDIR /app
-
-# Install a simple HTTP server to serve static files
-RUN npm install -g serve
-
-# Copy built files from build stage
-COPY --from=build /app/dist ./dist
-
-# Expose port
-EXPOSE 3000
+# Expose port (adjust if your server uses a different port)
+EXPOSE 8001
 
 # Start the application
-CMD ["serve", "-s", "dist", "-l", "3000"]
+CMD ["npm", "run", "dev"]
